@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGX User List</title>
+
+    <style>
+
+      
+        *{
+           margin-top: 15px;
+           margin-left: 15px;
+            font-size: 15px;
+            font-family: Arial, Helvetica, sans-serif;
+        
+        }
+    body{
+       
+        margin: 0;
+        
+    }
+
+    th, td{
+        padding: 10px 15px;
+        
+    }
+
+    button{
+        padding: 5px 20px;
+        margin-left: 30px;
+        background-color: rgba(24, 27, 219, 0.781);
+        border-radius: 6px;
+        outline: none;
+        border: none;
+    }
+    button.del{
+        background-color: rgb(236, 11, 11);
+    }
+    button:hover{
+        color: rgba(54, 190, 88, 0.418);
+        opacity: 0.8;
+        cursor: pointer;
+    }
+    </style>
+
+    <script type="text/javascript">
+
+        const DATABASE = 'teste';
+        const ls = localStorage.getItem(DATABASE)
+
+        var data = ls ?
+        JSON.parse(ls) :
+        {
+            id:0,
+            list:[]  
+         }
+
+        function render(){
+            const tbody = document.getElementById('tbody')
+            tbody.innerHTML = ''
+            data.list.map( item => {
+                const tr = document.createElement('tr')
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.nome}</td>
+                    <td>
+                    <button onclick='edit(${item.id}, "${item.nome}")'>Editar</button>
+                    <button class='del' onclick='deleteReg(${item.id})'>Deletar</button>
+                    </td>
+                `
+                tbody.appendChild(tr)
+            })
+        }
+
+        function add(){
+            var value = ''
+            if( !( value = prompt('Digite novo usuario', value))) return;
+            data.id++;
+            data.list.push({
+            id:data.id,
+            nome:value
+           })
+           render();
+           salvar();
+        }
+
+        function edit(id, nome){
+            var value = nome
+            if( !( nome = prompt('Informe nova alteração', nome))) return;
+            data.list = data.list.map( item => {
+                if(item.id === id)
+                item.nome = nome
+                return item;
+            })
+            render(id)
+            salvar()
+        }
+
+        function salvar(){
+            localStorage.setItem(DATABASE, JSON.stringify(data))
+        }
+
+
+        function deleteReg(id){
+            if( !confirm('Deseja excluir registro?')) return;
+            data.list = data.list.filter( item => item.id != id )
+            render();
+            salvar();
+
+        }
+
+        window.addEventListener('load',e => {
+            render();
+        })
+
+    </script>
+
+</head>
+<body>
+
+    <h3>Formulario de Cadastro</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+
+    
+        <button onclick='add()'>Novo</button>
+
+
+</body>
+</html>
